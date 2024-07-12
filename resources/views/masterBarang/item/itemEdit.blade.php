@@ -17,7 +17,7 @@
 
 <div class="mt-3">
     <form action="/item/update/{{ $item->id }}" method="post">
-      {{-- @method('put') --}}
+      @method('put')
       @csrf
       <div class="mb-3 col-lg-5">
         <label for="category_id" class="form-label">Kategori</label>
@@ -49,33 +49,6 @@
           <label for="stock" class="form-label">Stock:</label>
           <input type="number" name="stock" class="form-control @error('stock') is-invalid @enderror" value="{{ $item->stock }}" id="stock">
           @error('stock')
-              <div class="invalid-feedback">
-                {{ $message }}
-              </div>
-          @enderror
-        </div>
-        <div class="mb-3 col-lg-5">
-          <label for="firstStock" class="form-label">Stock Awal:</label>
-          <input type="number" name="firstStock" class="form-control @error('firstStock') is-invalid @enderror" value="{{ $item->firstStock }}" id="firstStock">
-          @error('firstStock')
-              <div class="invalid-feedback">
-                {{ $message }}
-              </div>
-          @enderror
-        </div>
-        <div class="mb-3 col-lg-5">
-          <label for="stockIn" class="form-label">Stock Masuk:</label>
-          <input type="number" name="stockIn" class="form-control @error('stockIn') is-invalid @enderror" value="{{ $item->stockIn }}" id="stockIn">
-          @error('stockIn')
-              <div class="invalid-feedback">
-                {{ $message }}
-              </div>
-          @enderror
-        </div>
-        <div class="mb-3 col-lg-5">
-          <label for="stockOut" class="form-label">Stock Keluar:</label>
-          <input type="text" name="stockOut" class="form-control @error('stockOut') is-invalid @enderror" value="{{ $item->stockOut }}" id="stockOut">
-          @error('stockOut')
               <div class="invalid-feedback">
                 {{ $message }}
               </div>

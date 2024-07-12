@@ -21,10 +21,12 @@ class poMiddleware
             if (Auth::user()->division_id === 3) {
                 return $next($request);
             } else {
+                $request->session()->flash('danger', 'Access Denied!');
                 return redirect('/dashboard')->with('message', 'Access Denied');
             }
 
         } else {
+            $request->session()->flash('danger', 'Access Denied!');
             return redirect('/')->with('message', 'Access Denied');
         }
 

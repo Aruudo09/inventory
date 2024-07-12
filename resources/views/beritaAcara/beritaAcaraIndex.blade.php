@@ -54,6 +54,10 @@
               <td>{{ $berita_acara->created_at }}</td>
               <td>{{ $berita_acara->updated_at }}</td>
               <td>
+                {{-- PRINT BUTTON --}}
+                <a href="/beritaAcara/printOut/{{ $berita_acara->id }}" class="badge text-bg-success border-0">
+                  <i class="bi bi-file-earmark-arrow-down"></i>
+                </a>
                 <!---DETAIL BUTTON-->
                 <button type="button" data-url="{{ route('setDetail.detailBa', $berita_acara->id) }}" data-code="{{ $berita_acara->baCode }}" data-po="{{ $berita_acara->purchase_order->poCode }}" 
                   data-name="{{ $berita_acara->user->username }}" data-description="{{ $berita_acara->description }}"
@@ -123,7 +127,6 @@
         </div>
         <div class="modal-footer">
           <button type="button" id="closeBtn" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
         </div>
       </div>
     </div>

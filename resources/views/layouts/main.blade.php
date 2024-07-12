@@ -33,14 +33,6 @@
   <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <div class="navbar-nav">
-    <div class="nav-item text-nowrap">
-        <form action="/logout" method="post">
-            @csrf
-            <button class="m-2 btn btn-danger" type="submit">Sign out</button>
-        </form>
-    </div>
-  </div>
 </header>
 
 <div class="container-fluid">
@@ -55,23 +47,22 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link btn text-start {{ (request()->is('category*')) || request()->is('item*') || request()->is('beritaAcara*') || request()->is('pemakaian*') ? 'active' : '' }}" data-bs-toggle="collapse" href="#itemCollapse" role="button" aria-expanded="false" aria-controls="itemCollapse">
+            <a class="nav-link btn text-start {{ (request()->is('category*')) || request()->is('item*') || request()->is('supplier*') ? 'active' : '' }}" data-bs-toggle="collapse" href="#itemCollapse" role="button" aria-expanded="false" aria-controls="itemCollapse">
               <span data-feather="file" class="align-text-bottom"></span>
-              Inventory
+              Data Master
             </a>
             <div class="collapse" id="itemCollapse">
               <div class="card card-body">
                 <a href="/category" class="text-decoration-none text-dark">Kategori</a>
                 <a href="/item" class="text-decoration-none text-dark">Barang</a>
-                <a href="/beritaAcara" class="text-decoration-none text-dark">Berita Acara</a>
-                <a href="/pemakaian" class="text-decoration-none text-dark">Pemakaian</a>
+                <a href="/supplier" class="text-decoration-none text-dark">Supplier</a>
               </div>
             </div>
           </li>
           <li class="nav-item">
             <a class="nav-link btn text-start {{ (request()->is('stockRequest*')) || request()->is('purchaseRequest*') || request()->is('purchaseOrder*') ? 'active' : '' }}" data-bs-toggle="collapse" href="#purchaseCollapse" role="button" aria-expanded="false" aria-controls="purchaseCollapse">
               <span data-feather="shopping-cart" class="align-text-bottom"></span>
-              Purchasing
+              Pengadaan Barang
             </a>
             <div class="collapse" id="purchaseCollapse">
               <div class="card card-body">
@@ -82,19 +73,40 @@
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link btn text-start {{ (request()->is('supplier*')) ? 'active' : '' }}" href="/supplier">
-              <span data-feather="users" class="align-text-bottom"></span>
-              Suppliers
+            <a class="nav-link btn text-start {{ (request()->is('beritaAcara*')) ? 'active' : '' }}" data-bs-toggle="collapse" href="#penerimaanCollapse" role="button" aria-expanded="false" aria-controls="penerimaanCollapse">
+              <span data-feather="layers" class="align-text-bottom"></span>
+              Penerimaan Barang
             </a>
+            <div class="collapse" id="penerimaanCollapse">
+              <div class="card card-body">
+                <a href="/beritaAcara" class="text-decoration-none text-dark">Berita Acara</a>
+              </div>
+            </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link btn text-start" href="#">
-              <span data-feather="bar-chart-2" class="align-text-bottom"></span>
+            <a class="nav-link btn text-start {{ (request()->is('pemakaian*')) ? 'active' : '' }}" data-bs-toggle="collapse" href="#pemakaianCollapse" role="button" aria-expanded="false" aria-controls="pemakaianCollapse">
+              <span data-feather="layers" class="align-text-bottom"></span>
+              Pemakaian Barang
+            </a>
+            <div class="collapse" id="pemakaianCollapse">
+              <div class="card card-body">
+                <a href="/pemakaian" class="text-decoration-none text-dark">Pemakaian</a>
+              </div>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link btn text-start {{ (request()->is('report*')) ? 'active' : '' }}" data-bs-toggle="collapse" href="#reportCollapse" role="button" aria-expanded="false" aria-controls="reportCollapse">
+              <span data-feather="layers" class="align-text-bottom"></span>
               Reports
             </a>
+            <div class="collapse" id="reportCollapse">
+              <div class="card card-body">
+                <a href="/report" class="text-decoration-none text-dark">Rekapitulasi</a>
+              </div>
+            </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link btn text-start {{ (request()->is('register*')) ? 'active' : '' }}" data-bs-toggle="collapse" href="#registerCollapse" role="button" aria-expanded="false" aria-controls="registerCollapse">
+            <a class="nav-link btn text-start {{ (request()->is('register*')) || request()->is('division*') ? 'active' : '' }}" data-bs-toggle="collapse" href="#registerCollapse" role="button" aria-expanded="false" aria-controls="registerCollapse">
               <span data-feather="layers" class="align-text-bottom"></span>
               Register
             </a>
@@ -105,9 +117,27 @@
               </div>
             </div>
           </li>
+          <hr>
+          <li class="nax-item">
+            <a class="nav-link text-start" data-bs-toggle="collapse" href="#userCollapse" role="button" aria-expanded="false" aria-controls="userCollapse">
+              <span data-feather="layers" class="align-text-bottom"></span>
+              <i class="bi bi-person-circle"></i>
+              {{ Auth::user()->username }}
+            </a>
+            <div class="collapse" id="userCollapse">
+              <div class="card card-body">
+                  <a href="{{ route('logout') }}" class="text-decoration-none text-dark" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    Sign Out
+                  </a>
+                  <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
+              </div>
+            </div>
+          </li>
         </ul>
 
-        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+        {{-- <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
           <span>Saved reports</span>
           <a class="link-secondary" href="#" aria-label="Add a new report">
             <span data-feather="plus-circle" class="align-text-bottom"></span>
@@ -138,7 +168,7 @@
               Year-end sale
             </a>
           </li>
-        </ul>
+        </ul> --}}
       </div>
     </nav>
 
@@ -151,8 +181,8 @@
 
 <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
     <script src="/assets/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script>
       <script src="{{ asset('js/dashboard.js') }}"></script>
       <script src="{{ asset('js/script.js') }}"></script>
       <script type="text/javascript">

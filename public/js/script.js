@@ -4,11 +4,12 @@ $(document).ready(function() {
 
 
     //----------------STOCK REQUEST INPUT TEXT FIELD------------------//
-    let num = 0;
+    // let num = 0;
     
     $('#stockRequestSelect').change(function() {
         let name = $('#stockRequestSelect').find(':selected').html();
         let id = $('#stockRequestSelect').find(':selected').val();
+        let num = $('#counter').val();
         num ++;
         $('#counter').val(num);
         $('#stockRequestTable tbody').append(
@@ -19,25 +20,18 @@ $(document).ready(function() {
             '<td><button type="button" class="removeBtn btn btn-danger" id="stockRequestBtn'+num+'" data-id="'+num+'"><i class="bi bi-dash-square"></i></button></td>' +
             '</tr>'
         );
-        // console.log(num);
         $('#submitBtn').attr('disabled', false);
     });
 
     $('#stockRequestTable tbody').on('click', '.removeBtn', function() {
-        let id = $(this).data("id");
+        let num = $('#counter').val();
+        let id = $(this).data('id');
         $(this).closest('#stockRequestRow'+id+'').remove();
         num --;
         $('#counter').val(num);
-        // console.log(num);
-        if (num ===0 ) {
+        if (num === 0 ) {
             $('#submitBtn').prop('disabled', 'true');
         }
-    });
-
-    //----------------DELETE STOCK REQUEST TEXT FIELD IN UPDATE------------------//
-    $('.deleteSr').click(function() {
-        let id = $(this).attr('id');
-        $('#srRow'+id+'').remove();
     });
 
     //--------------------STOCK REQUEST DETAIL FIELD----------------------//
@@ -86,7 +80,7 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(data) {
                 let num = 1;
-                console.log(data);
+                // console.log(data);
                 for (let index = 0; index < data.length; index++) {
                     $('#purchaseRequestTable tbody').append(
                         '<tr id="purchaseRequestRow'+num+'">' +
@@ -110,8 +104,14 @@ $(document).ready(function() {
 
     //----------------- DELETE PURCHASE REQUEST TEXT FIELD IN UPDATE-------------------//
     $('.deletePr').click(function() {
+        let num = $('#counter').val();
+        num--;
+        // console.log(num);
         let id = $(this).attr('id');
         $('#prRow'+id+'').remove();
+        if (num === 0 ) {
+            $('#submitBtn').prop('disabled', 'true');
+        }
     });
 
     //--------------------PURCHASE REQUEST DETAIL FIELD----------------------//
@@ -154,12 +154,14 @@ $(document).ready(function() {
     $('#supplierSelect').change(function() {
         let name = $('#supplierSelect').find(':selected').html();
         let id = $('#supplierSelect').find(':selected').val();
-        num ++;
+        let num = $('#counter').val();
+        num++;
         $('#counter').val(num);
         $('#supplierTable tbody').append(
             '<tr id="supplierRow'+num+'">' +
             '<td>'+num+'<input type="hidden" name="item_id'+"[]"+'" value="'+id+'"></td>' +
             '<td>'+name+'</td>' +
+            '<td><input type="number" name="harga'+"[]"+'" value="" required></td>' +
             '<td><button type="button" class="removeBtn btn btn-danger" id="supplierBtn'+num+'" data-id="'+num+'"><i class="bi bi-dash-square"></i></button></td>' +
             '</tr>'
         );
@@ -168,7 +170,9 @@ $(document).ready(function() {
     });
 
     $('#supplierTable tbody').on('click', '.removeBtn', function() {
+        let num = $('#counter').val();
         let id = $(this).data("id");
+        // console.log(id);
         $(this).closest('#supplierRow'+id+'').remove();
         num --;
         $('#counter').val(num);
@@ -223,19 +227,15 @@ $(document).ready(function() {
             type: 'GET',
             dataType: 'json',
             success: function(data) {
+                // console.log(data);
                 for (let index = 0; index < data.length; index++) {
                     $('#purchaseOrderTable tbody').append(
                         '<tr id="purchaseOrderRow'+num+'">' +
                         '<td>'+num+'<input type="hidden" name="item_id'+"[]"+'" value="'+data[index].pivot.item_id+'"></td>' +
                         '<td>'+data[index].itemName+'</td>' +
                         '<td><input type="number" name="qtyPo'+"[]"+'" value="'+data[index].pivot.qtyPr+'" required></td>' +
-                        '<td><select class="js-example-basic-single" style="width: 75%" name="satuanSelect'+"[]"+'" id="satuanPoSelect">' + 
-                        '<option value="" selected disabled>Pilih Satuan....</option>' +
-                        '<option value="Pcs">Pcs</option>' +
-                        '<option value="Kg">Kg</option>' +
-                        '<option value="Liter">Liter</option>' +
-                        '</select></td>' +
-                        '<td><input type="number" name="harga'+"[]"+'" value="" required></td>' +
+                        '<td><input type="text" name="satuan'+"[]"+'" value="'+data[index].satuan+'" required></td>' +
+                        '<td><input type="number" name="harga'+"[]"+'" value="'+data[index].harga+'" required></td>' +
                         '<td><button type="button" class="removeBtn btn btn-danger" id="supplierBtn'+num+'" data-id="'+num+'"><i class="bi bi-dash-square"></i></button></td>' +
                         '</tr>'
                     );
@@ -254,7 +254,14 @@ $(document).ready(function() {
     //----------------- DELETE PURCHASE ORDER TEXT FIELD IN UPDATE-------------------//
     $('.deletePo').click(function() {
         let id = $(this).attr('id');
+        let num = $('#counter').val();
+        num--;
+        // console.log(num);
+        $('#counter').val(num);
         $('#poRow'+id+'').remove();
+        if (num === 0 ) {
+            $('#submitBtn').prop('disabled', 'true');
+        }
     });
 
     //--------------------PURCHASE ORDER DETAIL FIELD----------------------//
@@ -293,9 +300,9 @@ $(document).ready(function() {
         });
     });
 
-    // $('#closeBtn').click(function() {
-    //     $('.poRow').remove();
-    // });
+    $('#closeBtn').click(function() {
+        $('.poRow').remove();
+    });
 
     //--------------------BERITA ACARA----------------------//
     $('#po_id').on('change', function() {
@@ -319,7 +326,7 @@ $(document).ready(function() {
                         '<tr id="beritaAcaraRow'+num+'">' +
                         '<td>'+num+'<input type="hidden" name="item_id'+"[]"+'" value="'+data[1][index].id+'"></td>' +
                         '<td>'+data[1][index].itemName+'</td>' +
-                        '<td><input type="number" name="qtyBa'+"[]"+'" value=""></td>' +
+                        '<td><input type="number" name="qtyBa'+"[]"+'" value="" required></td>' +
                         '<td><input type="hidden" name="satuan'+"[]"+'" value="'+data[1][index].satuan+'">'+data[1][index].satuan+'</td>' +
                         '</tr>'
                     ); 
@@ -363,15 +370,16 @@ $(document).ready(function() {
         });
     });
 
-    // $('#closeBtn').click(function() {
-    //     $('.poRow').remove();
-    // });
+    $('#closeBtn').click(function() {
+        $('.baRow').remove();
+    });
 
     //----------------PEMAKAIAN INPUT TEXT FIELD------------------//
 
     $('#pemakaianSelect').change(function() {
         let name = $('#pemakaianSelect').find(':selected').html();
         let id = $('#pemakaianSelect').find(':selected').val();
+        let num = $('#counter').val();
         num ++;
         $('#counter').val(num);
         $('#pemakaianTable tbody').append(
@@ -382,12 +390,12 @@ $(document).ready(function() {
             '<td><button type="button" class="removeBtnUse btn btn-danger" id="pemakaianBtn'+num+'" data-id="'+num+'"><i class="bi bi-dash-square"></i></button></td>' +
             '</tr>'
         );
-        // console.log(num);
         $('#submitBtn').attr('disabled', false);
     });
 
     $('#pemakaianTable tbody').on('click', '.removeBtnUse', function() {
         let id = $(this).data("id");
+        let num = $('#counter').val();
         $(this).closest('#pemakaianRow'+id+'').remove();
         num --;
         $('#counter').val(num);
@@ -401,11 +409,13 @@ $(document).ready(function() {
     $('.detailBtnUse').click(function(){
         let kode = $(this).data('code');
         let name = $(this).data('name');
+        let id = $(this).data('id');
         let poCode = $(this).data('po');
         let description = $(this).data('description');
         let url = $(this).data('url');
         $('#noUsed').html(kode);
         $('#useName').html(name);
+        $('#useId').val(id);
         $('#poCode').html(poCode);
         $('#description').html(description);
         let num = 1;
@@ -415,19 +425,24 @@ $(document).ready(function() {
             type: 'GET',
             dataType: 'json',
             success: function(data) {
-                // console.log(data);
+                console.log(data);
+                $('#formApproved').attr('action', '/pemakaian/approved');
                 for (let index = 0; index < data.length; index++) {
                     $('#useDetail tbody').append(
                         '<tr class="useRow" id="useRow'+num+'">' +
-                        '<td>'+num+'</td>' +
-                        '<td>'+data[index].itemName+'</td>' +
-                        '<td>'+data[index].pivot.qtyUse+'</td>' +
+                        '<td><input type="hidden" name="item_id'+"[]"+'" value="'+data[index].pivot.item_id+'">'+num+'</td>' +
+                        '<td><input type="text" name="itemName'+"[]"+'" value="'+data[index].itemName+'" readonly></td>' +
+                        '<td><input type="number" name="qtyUse'+"[]"+'" value="'+data[index].pivot.qtyUse+'" readonly></td>' +
                         '</tr>'
                     );
                     num++;
                 }
             }
         });
+    });
+
+    $('#closeBtn').click(function() {
+        $('.useRow').remove();
     });
 
     //----------------- DELETE PEMAKAIAN TEXT FIELD IN UPDATE-------------------//

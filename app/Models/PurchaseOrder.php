@@ -35,6 +35,6 @@ class PurchaseOrder extends Model
     }
 
     public function item() {
-        return $this->belongsToMany(Item::class, 'purchase_order_item', 'purchase_order_id', 'item_id')->withPivot('qtyPo', 'satuan', 'harga', 'total')->withTimestamps();
+        return $this->belongsToMany(Item::class, 'purchase_order_item', 'purchase_order_id', 'item_id')->withPivot('qtyPo', 'qtyBa','satuan', 'harga', 'total')->withTimestamps();
     }
 }

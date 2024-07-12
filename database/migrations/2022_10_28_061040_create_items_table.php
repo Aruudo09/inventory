@@ -20,8 +20,6 @@ return new class extends Migration
             $table->string('itemName');
             $table->double('stock', 7, 2);
             $table->double('firstStock', 7, 2);
-            $table->double('stockIn', 7, 2);
-            $table->double('stockOut', 7, 2);
             $table->char('satuan', 5);
             $table->integer('harga');
             $table->timestamps();

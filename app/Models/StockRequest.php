@@ -12,6 +12,8 @@ class StockRequest extends Model
 
     protected $guarded = ['id'];
 
+    // public $timestamps = FALSE;
+
     public function scopeFilter($query, array $filters) {
 
         $query->when($filters['search'] ?? false, function($query, $search) {

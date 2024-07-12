@@ -49,7 +49,7 @@ class DivisionController extends Controller
     {
         $validated = $request->validate([
             "divisionName" => 'required',
-            "initials" => ['required', 'max:4', 'min:3'],
+            "initials" => ['required', 'max:4', 'min:2'],
             "divisionHead" => 'required'
         ]);
 

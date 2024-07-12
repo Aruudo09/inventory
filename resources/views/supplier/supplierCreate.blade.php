@@ -74,6 +74,7 @@
                 <tr>
                   <th scope="col">No</th>
                   <th scope="col">Nama Barang</th>
+                  <th scope="col">Harga</th>
                   <th scope="col">Action</th>
                 </tr>
               </thead>

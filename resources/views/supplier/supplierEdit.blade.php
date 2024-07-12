@@ -75,14 +75,17 @@
                 <tr>
                   <th scope="col">No</th>
                   <th scope="col">Nama Barang</th>
+                  <th scope="col">Harga</th>
                   <th scope="col">Action</th>
                 </tr>
               </thead>
               <tbody class="text-center">
                 @foreach ($suppliers->item as $supplier)
-                  <tr>
+                  <tr id="supplierRow{{ $loop->iteration }}">
                     <td>{{ $loop->iteration }}</td>
                     <td><input type="hidden" name="item_id[]" value="{{ $supplier->pivot->item_id }}">{{ $supplier->itemName }}</td>
+                    <td><input type="number" name="harga[]" value="{{ $supplier->pivot->harga }}"></td>
+                    <td><button type="button" class="removeBtn btn btn-danger" id="supplierBtn{{ $loop->iteration }}" data-id="{{ $loop->iteration }}"><i class="bi bi-dash-square"></i></button></td>
                   </tr>
                 @endforeach
                 {{-- APPEND TALE ROW --}}
@@ -94,7 +97,11 @@
             <input id="x" type="hidden" name="address" value="{{ $suppliers->address }}">
             <trix-editor input="x"></trix-editor>
           </div>
-          <input type="hidden" name="counter" id="counter" value="0">
+          @if (count($suppliers->item) != 0)
+              <input type="hidden" name="counter" id="counter" value="{{ count($suppliers->item) }}">
+          @else
+              <input type="hidden" name="counter" id="counter" value="0">
+          @endif
         <button type="submit" class="btn btn-primary" id="submit">Submit</button>
       </form>
     </div>    

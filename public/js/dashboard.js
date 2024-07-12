@@ -1,53 +1,38 @@
-/* globals Chart:false, feather:false */
+//ajax
+$.ajax({
+  url: '/dashboard/chart',
+  type: 'GET',
+  dataType: 'json',
+  success: function(data) {
 
-(() => {
-  'use strict'
+    // console.log(data[0]);
 
-  feather.replace({ 'aria-hidden': 'true' })
-
-  // Graphs
-  const ctx = document.getElementById('myChart')
-  // eslint-disable-next-line no-unused-vars
-  const myChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: [
-        'Sunday',
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday'
-      ],
-      datasets: [{
-        data: [
-          15339,
-          21345,
-          18483,
-          24003,
-          23489,
-          24092,
-          12034
-        ],
-        lineTension: 0,
-        backgroundColor: 'transparent',
-        borderColor: '#007bff',
-        borderWidth: 4,
-        pointBackgroundColor: '#007bff'
-      }]
-    },
-    options: {
-      scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero: false
-          }
-        }]
+    // CHART JS
+    new Chart(document.getElementById("line-chart"), {
+      type : 'line',
+      data : {
+        labels : [ 'Januari', 'Febuari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
+            'Agustus', 'September', 'Oktober', 'November', 'Desember' ],
+        datasets : [
+            {
+              data : data[0],
+              label : "Barang Masuk",
+              borderColor : "#3cba9f",
+              fill : false
+            },
+            {
+              data : data[1],
+              label : "Barang Keluar",
+              borderColor : "#e43202",
+              fill : false
+            } ]
       },
-      legend: {
-        display: false
+      options : {
+        title : {
+          display : true,
+          text : 'Chart JS Multiple Lines Example'
+        }
       }
-    }
-  })
-})()
+    });
+  }
+});

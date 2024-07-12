@@ -15,7 +15,7 @@
     <!--FLASH MESSAGE-->
     @if(session()->has('danger'))
           <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ session('success') }}
+            {{ session('danger') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
     @endif
@@ -23,6 +23,10 @@
 
     <form action="/pemakaian/store" method="post">
       @csrf
+          <div class="mb-3 col-lg-5">
+            <label for="created_at" class="form-label">Dates:</label>
+            <input type="datetime-local" class="form-control" name="created_at" id="">
+          </div>
           <h6>Pilih Barang:</h6>
           <div class="mb-3 col-lg-5">
               <select class="js-example-basic-single" style="width: 75%" name="itemSelect" id="pemakaianSelect">

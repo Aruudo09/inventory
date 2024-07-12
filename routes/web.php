@@ -29,7 +29,7 @@ use App\Http\Controllers\PurchaseRequestController;
 
 Route::get('/', [LoginController::class, 'create'])->name('login');
 Route::post('/login', [LoginController::class, 'authenticate']);
-Route::post('/logout', [LoginController::class, 'logout']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Route::get('/register/edit/{user}', [RegisterController::class, 'edit'])->name('register.edit');
 
@@ -58,13 +58,36 @@ Route::middleware(['auth', 'isAdmin'])->group(function() {
     Route::delete('/purchaseRequest/destroy/{purchase_request}', [PurchaseRequestController::class, 'destroy']);
     Route::get('/purchaseRequest/setDetail/{pr_id}', [PurchaseRequestController::class, 'setDetail'])->name('setDetail.purchaseRequest');
     Route::get('/purchaseRequest/setText/{sr_id}', [PurchaseRequestController::class, 'setText'])->name('setText.purchaseRequest');
+    Route::get('/purchaseRequest/printOut/{pr_id}', [PurchaseRequestController::class, 'printOut']);
+
+    // BERITA ACARA
+    Route::get('/beritaAcara/edit/{berita_acara}', [BeritaAcaraController::class, 'edit'])->name('beritaAcara.edit');
+    Route::put('/beritaAcara/update/{berita_acara}', [BeritaAcaraController::class, 'update']);
+    Route::delete('/beritaAcara/destroy/{berita_acara}', [BeritaAcaraController::class, 'destroy']);
+    Route::get('/beritaAcara/printOut/{berita_acara}', [BeritaAcaraController::class, 'printOut']);
+
+    // PEMAKAIAN
+    Route::get('/pemakaian/edit/{use_id}', [PemakaianController::class, 'edit'])->name('pemakaian.edit');
+    Route::delete('/pemakaian/destroy/{use_id}', [PemakaianController::class, 'destroy']);
+    Route::put('/pemakaian/update/{pemakaian}', [PemakaianController::class, 'update']);
+    Route::post('/pemakaian/approved', [PemakaianController::class, 'approved']);
 
 });
 
 Route::middleware(['auth'])->group(function () {
 
+    // EXPORT REKAPITULASI
+    Route::post('/item/export/', [ItemController::class, 'export'])->name('item.eksport');
+    Route::post('/stockRequest/export/', [StockRequestController::class, 'export'])->name('stockRequest.eksport');
+    Route::post('/purchaseRequest/export/', [PurchaseRequestController::class, 'export'])->name('purchaseRequest.eksport');
+    Route::post('/purchaseOrder/export/', [PurchaseOrderController::class, 'export'])->name('purchaseOrder.eksport');
+    Route::post('/beritaAcara/export/', [BeritaAcaraController::class, 'export'])->name('beritaAcara.eksport');
+    Route::post('/pemakaian/export/', [PemakaianController::class, 'export'])->name('pemakaian.eksport');
+
     // DASHBOARD ROUTE
     Route::get('/dashboard', [DashboardController::class, 'index']);
+    Route::get('/dashboard/chart', [DashboardController::class, 'chart']);
+    Route::get('/report', [DashboardController::class, 'report']);
 
     // ITEM CATEGORY ROUTE
     Route::get('/category', [CategoryController::class, 'index']);
@@ -81,6 +104,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/item/edit/{item}', [ItemController::class, 'edit'])->name('item.edit');
     Route::put('/item/update/{item}', [ItemController::class, 'update']);
     Route::delete('/item/destroy/{item}', [ItemController::class, 'destroy']);
+    // Route::post('/item/export/', [ItemController::class, 'export'])->name('item.eksport');
 
     // STOCK REQUEST ROUTE
     Route::get('/stockRequest', [StockRequestController::class, 'index']);
@@ -90,15 +114,16 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/stockRequest/update/{stockRequest}', [StockRequestController::class, 'update']);
     Route::delete('/stockRequest/destroy/{stockRequest}', [StockRequestController::class, 'destroy']);
     Route::get('/stockRequest/setText/{sr_id}', [StockRequestController::class, 'setText'])->name('setText.stockRequest');
+    Route::get('/stockRequest/printOut/{sr_id}', [StockRequestController::class, 'printOut']);
 
     // BERITA ACARA ROUTE
     Route::get('/beritaAcara', [BeritaAcaraController::class, 'index']);
     Route::get('/beritaAcara/create', [BeritaAcaraController::class, 'create']);
     Route::get('/beritaAcara/setText/{po_id}', [BeritaAcaraController::class, 'setText'])->name('setText.beritaAcara');
     Route::post('/beritaAcara/store', [BeritaAcaraController::class, 'store']);
-    Route::get('/beritaAcara/edit/{berita_acara}', [BeritaAcaraController::class, 'edit'])->name('beritaAcara.edit');
-    Route::put('/beritaAcara/update/{berita_acara}', [BeritaAcaraController::class, 'update']);
-    Route::delete('/beritaAcara/destroy/{berita_acara}', [BeritaAcaraController::class, 'destroy']);
+    // Route::get('/beritaAcara/edit/{berita_acara}', [BeritaAcaraController::class, 'edit'])->name('beritaAcara.edit');
+    // Route::put('/beritaAcara/update/{berita_acara}', [BeritaAcaraController::class, 'update']);
+    // Route::delete('/beritaAcara/destroy/{berita_acara}', [BeritaAcaraController::class, 'destroy']);
     Route::get('/beritaAcara/setDetail/{ba_id}', [BeritaAcaraController::class, 'setDetail'])->name('setDetail.detailBa');
 
     // PEMAKAIAN
@@ -106,9 +131,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pemakaian/create', [PemakaianController::class, 'create']);
     Route::post('/pemakaian/store', [PemakaianController::class, 'store']);
     Route::get('pemakaian/setDetail/{use_id}', [PemakaianController::class, 'setDetail'])->name('setDetail.detailUse');
-    Route::get('/pemakaian/edit/{use_id}', [PemakaianController::class, 'edit'])->name('pemakaian.edit');
-    Route::delete('/pemakaian/destroy/{use_id}', [PemakaianController::class, 'destroy']);
-    Route::put('/pemakaian/update/{pemakaian}', [PemakaianController::class, 'update']);
+    // Route::get('/pemakaian/edit/{use_id}', [PemakaianController::class, 'edit'])->name('pemakaian.edit');
+    // Route::delete('/pemakaian/destroy/{use_id}', [PemakaianController::class, 'destroy']);
+    // Route::put('/pemakaian/update/{pemakaian}', [PemakaianController::class, 'update']);
+    Route::get('/pemakaian/printOut/{use_id}', [PemakaianController::class, 'printOut']);
 
 });
 
@@ -131,7 +157,7 @@ Route::middleware(['auth', 'isProc'])->group(function () {
     Route::put('/purchaseOrder/update/{purchase_order}', [PurchaseOrderController::class, 'update']);
     Route::delete('/purchaseOrder/destroy/{purchase_order}', [PurchaseOrderController::class, 'destroy']);
     Route::get('/purchaseOrder/setDetail/{po_id}', [PurchaseOrderController::class, 'setDetail'])->name('setDetail.detailPo');
-    Route::get('/purchaseOrder/word/{po_id}', [PurchaseOrderController::class, 'word']);
+    Route::get('/purchaseOrder/printOut/{po_id}', [PurchaseOrderController::class, 'printOut']);
 
 });
 

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use PDF;
+use Dompdf\Dompdf;
 use App\Models\Item;
 use App\Models\Division;
 use App\Models\Supplier;
@@ -9,10 +11,12 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseRequest;
+use Illuminate\Support\Facades\App;
+use App\Exports\purchaseOrderExport;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StorePurchaseOrderRequest;
 use App\Http\Requests\UpdatePurchaseOrderRequest;
-use PDF;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 
 class PurchaseOrderController extends Controller
 {
@@ -36,7 +40,7 @@ class PurchaseOrderController extends Controller
     public function create()
     {
         return view('purchase.purchaseOrder.purchaseOrderCreate', [
-            'purchase_requests' => PurchaseRequest::select('id', 'prCode')->latest()->get(),
+            'purchase_requests' => PurchaseRequest::select('id', 'prCode')->where('status', '!=', '1')->get(),
             'suppliers' => Supplier::select('id', 'spName')->get()
         ]);
     }
@@ -70,21 +74,42 @@ class PurchaseOrderController extends Controller
         $kebutuhan = $request->kebutuhan;
         $number = $count + 1;
         $limit = count($request->item_id);
-        
-        $prefix = sprintf('%04d', $number) . '/' . $initial[0]. '-' . $kebutuhan . '/' . date('m') . '/' . date('y');
-        // DD($prefix);
+
+        $sec = strtotime($request->created_at);
+        $newdate = date ("Y-m-d H:i", $sec); 
+        $newdate = $newdate . ":00";
+
+        // MENGENERATE KODE STOCK REQUEST
+        if ($request->created_at != null) {
+            $month = Str::substr($request->created_at, 5, 2);
+            $year = Str::substr($request->created_at, 2, 2);
+            $prefix = sprintf('%04d', $number) . '/' . $initial[0]. '-' . $kebutuhan . '/' . $month . '/' . $year;
+            $request['created_at'] = $newdate;
+            $rules = [
+                'poCode' => 'required',
+                'pr_id' => 'required',
+                'user_id' => 'required',
+                'sp_id' => 'required',
+                'description' => 'required',
+                'pymntTerms' => 'required',
+                'created_at' => 'required'
+            ];
+
+        } else {
+            $prefix = sprintf('%04d', $number) . '/' . $initial[0]. '-' . $kebutuhan . '/' . date('m') . '/' . date('y');
+            $rules = [
+                'poCode' => 'required',
+                'pr_id' => 'required',
+                'user_id' => 'required',
+                'sp_id' => 'required',
+                'description' => 'required',
+                'pymntTerms' => 'required'
+            ];
+
+        }
 
         $request['poCode'] = $prefix;
         $request['user_id'] = Auth::id();
-
-        $rules = [
-            'poCode' => 'required',
-            'pr_id' => 'required',
-            'user_id' => 'required',
-            'sp_id' => 'required',
-            'description' => 'required',
-            'pymntTerms' => 'required'
-        ];
 
         $validated = $request->validate($rules);
         
@@ -92,10 +117,27 @@ class PurchaseOrderController extends Controller
         if (PurchaseOrder::create($validated)) {
             $po_id = PurchaseOrder::select('id')->where('poCode', $prefix)->get();
 
-            for ($i=0; $i < $limit; $i++) { 
-                PurchaseOrder::find($po_id[0]['id'])->item()->attach($request->item_id[$i], ['qtyPo' => $request->qtyPo[$i], 'satuan' => $request->satuanSelect[$i], 'harga' => $request->harga[$i], 'total' => $request->qtyPo[$i]*$request->harga[$i]]);
+            // UPDATE STATUS PURCHASE REQUEST
+            purchaseRequest::where('id', $request->pr_id)->update(['status' => 1]);
+
+            // KONDISI BILA MENGINPUT WAKTU ATAU TIDAK
+            if ($request->created_at != null) {
+                for ($i=0; $i < $limit; $i++) { 
+                    PurchaseOrder::find($po_id[0]['id'])->item()->attach($request->item_id[$i], ['qtyPo' => $request->qtyPo[$i], 'satuan' => $request->satuan[$i], 'harga' => $request->harga[$i], 'total' => $request->qtyPo[$i]*$request->harga[$i], 'created_at' => $newdate]);
+                    Item::where('id', $request->item_id[$i])->update(['satuan' => $request->satuan[$i], 'harga' => $request->harga[$i]]);
+                    $sync[$request->item_id[$i]] = ['harga' => $request->harga[$i]];
+                }
+            } else {
+                for ($i=0; $i < $limit; $i++) { 
+                    PurchaseOrder::find($po_id[0]['id'])->item()->attach($request->item_id[$i], ['qtyPo' => $request->qtyPo[$i], 'satuan' => $request->satuan[$i], 'harga' => $request->harga[$i], 'total' => $request->qtyPo[$i]*$request->harga[$i]]);
+                    Item::where('id', $request->item_id[$i])->update(['satuan' => $request->satuan[$i], 'harga' => $request->harga[$i]]);
+                    $sync[$request->item_id[$i]] = ['harga' => $request->harga[$i]];
+                }
             }
             
+            // UPDATE ITEM DI TABLE SUPPLIER
+            Supplier::find($request->sp_id)->item()->sync($sync);
+
             $request->session()->flash('success', 'PR baru berhasil ditambah!');
             return redirect('purchaseOrder/create');
         } else {
@@ -140,6 +182,7 @@ class PurchaseOrderController extends Controller
     public function update(Request $request, PurchaseOrder $purchaseOrder)
     {
         $rule = [
+            'sp_id' => 'required',
             'description' => 'required',
             'pymntTerms' => 'required'
         ];
@@ -155,16 +198,22 @@ class PurchaseOrderController extends Controller
         $limit = count($request->item_id);
         $sync = [];
 
-        for ($i=0; $i < $limit; $i++) { 
-            $sync[$request->item_id[$i]] = ['qtyPo' => $request->qtyPo[$i], 'satuan' => $request->satuanSelect[$i], 'harga' => $request->harga[$i], 'total' => $request->qtyPo[$i]*$request->harga[$i]];
-        }
-
+        
         $validated = $request->validate($rule);
-
+        
         if (PurchaseOrder::where('id', $purchaseOrder->id)
-                    ->update($validated)) {
+        ->update($validated)) {
             
+            for ($i=0; $i < $limit; $i++) { 
+                $sync[$request->item_id[$i]] = ['qtyPo' => $request->qtyPo[$i], 'satuan' => $request->satuan[$i], 'harga' => $request->harga[$i], 'total' => $request->qtyPo[$i]*$request->harga[$i]];
+                $sync2[$request->item_id[$i]] = ['harga' => $request->harga[$i]];
+                if ($request->item_id[$i] != null) {
+                    Item::where('id', $request->item_id[$i])->update(['satuan' => $request->satuan[$i], 'harga' => $request->harga[$i]]);
+                }
+            }
                 PurchaseOrder::find($purchaseOrder->id)->item()->sync($sync);
+
+                Supplier::find($request->sp_id)->item()->sync($sync2);
             
             return redirect('purchaseOrder')->with('success', 'Purchase Order berhasil diubah!');
         } else {
@@ -180,6 +229,7 @@ class PurchaseOrderController extends Controller
      */
     public function destroy(PurchaseOrder $purchaseOrder)
     {
+        purchaseRequest::where('id', $purchaseOrder->pr_id)->update(['status' => 0]);
         if (PurchaseOrder::destroy($purchaseOrder->id)) {
             return redirect('purchaseOrder')->with('success', 'Purchase Order berhasil dihapus');
         } else {
@@ -187,80 +237,44 @@ class PurchaseOrderController extends Controller
         }
     }
 
-    public function word($po_id) {
-        
-        $purchase_orders = PurchaseOrder::where('id', $po_id)->get();
-        $purchase_order = $purchase_orders[0];
-        $limit = count($purchase_order->item);
-        $pymntTerms = Str::between($purchase_order->pymntTerms, '<div>', '</div>');
-        $address = Str::between($purchase_order->supplier->address, '<div>', '</div>');
-        // DD($purchase_order->item[0]->pivot->qtyPo);
+    public function printOut($po_id) {
 
-        // SCRIPT WORD
+        $purchaseOrder = PurchaseOrder::where('id', $po_id)->with('item')->first();
 
-            // Creating the new document...
-            $phpWord = new \PhpOffice\PhpWord\TemplateProcessor('poDocument.docx');
+        $suppliers = Supplier::where('id', $purchaseOrder->sp_id)->first();
+
+        $data = [
+            'purchase_orders' => $purchaseOrder,
+            'purchase_requests' => $purchaseOrder->purchase_request,
+            'suppliers' => $suppliers,
+        ];
             
-            $num = 1;
-            for ($i=0; $i < $limit; $i++) { 
-                $values[] = 
-                    [
-                    'no' => $num,
-                    'itemName' => $purchase_order->item[$i]->itemName,
-                    'qtyPo' => $purchase_order->item[$i]->pivot->qtyPo,
-                    'satuan' => $purchase_order->item[$i]->pivot->satuan,
-                    'harga' => $purchase_order->item[$i]->pivot->harga,
-                    'total' => $purchase_order->item[$i]->pivot->total
-                    ];
-                $num++;
-            }
+        $pdf = PDF::loadView('reports.purchaseOrder.purchaseOrderPrintOut', $data);
 
-            // DD($values);
+        //Aktifkan Local File Access supaya bisa pakai file external ( cth File .CSS )
+        $pdf->setOption('enable-local-file-access', true);
 
-            // DOCUMENT EDIT
-            $phpWord->setValues([
-                'poCode' => $purchase_order->poCode,
-                'poCreated_at' => $purchase_order->created_at,
-                'pymntTerms' => $pymntTerms,
-                'spName' => $purchase_order->supplier->spName,
-                'address' => $address,
-                'cpNumber' => $purchase_order->supplier->cpNumber,
-                'cpName' => $purchase_order->supplier->cpName,
-                'prCode' => $purchase_order->purchase_request->prCode,
-                'prCreated_at' => $purchase_order->purchase_request->created_at
-            ]);
+        // Stream untuk menampilkan tampilan PDF pada browser
+        return $pdf->stream('table.pdf');
 
+        // Jika ingin langsung download (tanpai melihat tampilannya terlebih dahulu) kalian bisa pakai fungsi download
+        // return $pdf->download('table.pdf);
 
-            // DD($values);
+    }
 
-            $phpWord->cloneRowAndSetValues('no', $values);
+    public function export(Request $request) {
 
-            // Saving the document as OOXML file...
-            // $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
-            $phpWord->saveAs('poEnd.docx');
+        // $items = Item::with('purchaseOrder')->get();
 
-            // Saving the document as ODF file...
-            // $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'ODText');
-            // $objWriter->save('helloWorld.odt');
+        // $items = Item::with('category')
+        //     ->withWhereHas('purchaseOrder', function (Builder $q) use($request) {
+        //         $q->whereMonth('purchase_order_item.created_at', $request->month);
+        //     })
+        //     ->get();
 
-            // Saving the document as HTML file...
-            // $phpWord = \PhpOffice\PhpWord\IOFactory::load('poEnd.docx');
-            // $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
-            // $htmlWriter->save('poEnd.html');
+        // DD($items);
 
-            /* Note: we skip RTF, because it's not XML-based and requires a different example. */
-            /* Note: we skip PDF, because "HTML-to-PDF" approach is used to create PDF documents. */
-
-            // RENDER TO PDF
-            $domPdfPath = base_path('vendor/dompdf/dompdf');
-            \PhpOffice\PhpWord\Settings::setPdfRendererPath($domPdfPath);
-            \PhpOffice\PhpWord\Settings::setPdfRendererName('DomPDF');
-
-            $phpWord = \PhpOffice\PhpWord\IOFactory::load('poEnd.docx');
-
-            $PDFWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord,'PDF');
-            $PDFWriter->save('poResult.pdf');
-
+        return (new purchaseOrderExport)->forMonth($request->month)->download('PO.xlsx');
     }
 
 }

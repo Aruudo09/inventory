@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('pemakaian_item', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('use_id');
+            $table->foreignId('use_id')->references('id')->on('pemakaians')->onDelete('cascade');
             $table->foreignId('item_id');
             $table->double('qtyUse');
             $table->timestamps();

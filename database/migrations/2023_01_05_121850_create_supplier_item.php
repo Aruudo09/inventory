@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('supplier_item', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('supplier_id')->referance('id')->on('supplier')->onDelete('cascade');
+            $table->foreignId('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
             $table->foreignId('item_id')->referance('id')->on('item');
             $table->timestamps();
             $table->integer('harga');

@@ -20,6 +20,10 @@
   @endif
   <!-- END FLASH MESSAGE-->
 
+      {{-- <div class="col-lg mb-2">
+        <a href="{{ route('item.eksport') }}" class="btn btn-success">Eksport</a>
+      </div> --}}
+
       <div class="col-lg-5">
         <form action="/item">
           <div class="input-group mb-3">
@@ -28,6 +32,7 @@
           </div>
         </form>
       </div>
+
   
       <table class="table table-bordered text-center">
           <thead class="table-primary">
@@ -37,9 +42,6 @@
               <th scope="col">Nama</th>
               <th scope="col">Kategori</th>
               <th scope="col">Stock</th>
-              <th scope="col">First Stock</th>
-              <th scope="col">Stock Masuk</th>
-              <th scope="col">Stock Keluar</th>
               <th scope="col">Satuan</th>
               <th scope="col">Harga</th>
               <th scope="col">Action</th>
@@ -53,11 +55,8 @@
               <td>{{ $item->itemName }}</td>
               <td>{{ $item->category->categoryName }}</td>
               <td>{{ $item->stock }}</td>
-              <td>{{ $item->firstStock }}</td>
-              <td>{{ $item->stockIn }}</td>
-              <td>{{ $item->stockOut }}</td>
               <td>{{ $item->satuan }}</td>
-              <td>{{ $item->harga }}</td>
+              <td>{{ number_format($item->harga, 0, '', '.') }}</td>
               <td>
                  <!--UPDATE BUTTON-->
                  <a href="{{route('item.edit', $item->id )}}" class="badge text-bg-primary"><i class="bi bi-pencil-square"></i></a>

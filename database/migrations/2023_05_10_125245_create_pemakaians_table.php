@@ -15,8 +15,9 @@ return new class extends Migration
     {
         Schema::create('pemakaians', function (Blueprint $table) {
             $table->id();
-            $table->integer('noUsed')->unique();
+            $table->char('useCode');
             $table->foreignId('user_id');
+            $table->boolean('status')->default(0);
             $table->string('description');
             $table->timestamps();
         });

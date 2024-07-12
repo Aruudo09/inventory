@@ -24,6 +24,7 @@ class RegisterController extends Controller
     }
 
     public function store(Request $request) {
+
         $validated = $request->validate([
             'username' => 'required',
             'division_id' => 'required',
@@ -31,13 +32,17 @@ class RegisterController extends Controller
             'userLevel' => 'required'
         ]);
 
+        // DD($request);
+
         $validated['password'] = Hash::make($validated['password']);
 
-        User::create($validated);
-
-        $request->session()->flash('success', 'User baru berhasil dibuat!');
-
-        return redirect('/register/create');
+        if (User::create($validated)) {
+            $request->session()->flash('success', 'User baru berhasil dibuat!');
+            return redirect('/register/create');   
+        } else {
+            $request->session()->flash('danger', 'User baru gagal dibuat!');
+            return redirect('/register/create');
+        }
     }
 
     public function setText($user) {

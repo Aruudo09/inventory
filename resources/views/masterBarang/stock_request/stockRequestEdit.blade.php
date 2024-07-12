@@ -54,19 +54,19 @@
           </thead>
           <tbody class="text-center">
             @foreach ($stock_requests->item as $stock_request)
-                <tr id="srRow{{ $loop->iteration }}">
+                <tr id="stockRequestRow{{ $loop->iteration }}">
                   <td>{{ $loop->iteration }}</td>
                   <td><input type="hidden" name="item_id[]" value="{{ $stock_request->pivot->item_id }}">{{ $stock_request->itemName }}</td>
                   <td><input type="number" name="qtySr[]" value="{{ $stock_request->pivot->qtySr }}"></td>
-                  <td><button type="button" class="deleteSr btn btn-danger" id="{{ $loop->iteration }}">
+                  <td><button type="button" class="removeBtn btn btn-danger" data-id="{{ $loop->iteration }}">
                     <i class="bi bi-dash-square"></i></button></td>
                 </tr>
-            @endforeach
-          </tbody>
-        </table>
-      </div>
-      <input type="hidden" name="counter" id="counter" value="0">
-      <button type="submit" class="btn btn-primary">Submit</button>
+                @endforeach
+              </tbody>
+            </table>
+          </div>
+          <input type="hidden" name="counter" id="counter" value="{{ $stock_requests->item->count() }}">
+      <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
     </form>
   </div>
 @endsection

@@ -21,11 +21,13 @@ class adminMiddleware
             if (Auth::user()->userLevel == 1) {
                 return $next($request);
             } else {
-                return redirect('/')->with('message', 'Access Denied');
+                $request->session()->flash('danger', 'Access Denied!');
+                return redirect('/dashboard')->with('message', 'Access Denied');
             }
 
         } else {
-            return redirect('/')->with('message', 'Access Denied');
+            $request->session()->flash('danger', 'Access Denied!');
+            return redirect('/dashboar')->with('message', 'Access Denied');
         }
 
         return $next($request);

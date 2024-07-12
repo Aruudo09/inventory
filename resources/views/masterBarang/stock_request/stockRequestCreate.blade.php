@@ -32,6 +32,10 @@
                 </div>
             @enderror
           </div>
+          <div class="mb-3 col-lg-5">
+            <label for="created_at" class="form-label">Dates:</label>
+            <input type="datetime-local" class="form-control" name="created_at" id="">
+          </div>
           <h6>Pilih Barang:</h6>
           <div class="mb-3 col-lg-5">
               <select class="js-example-basic-single" style="width: 75%" name="itemSelect" id="stockRequestSelect">

@@ -58,6 +58,10 @@
               <td>{{ $stock_request->created_at }}</td>
               <td>{{ $stock_request->updated_at }}</td>
               <td>
+                {{-- PRINT BUTTON --}}
+                <a href="/stockRequest/printOut/{{ $stock_request->id }}" class="badge text-bg-success border-0">
+                  <i class="bi bi-file-earmark-arrow-down"></i>
+                </a>
                 <!---DETAIL BUTTON-->
                 <button type="button" data-url="{{ route('setText.stockRequest', $stock_request->id) }}" data-code="{{ $stock_request->srCode }}" data-name="{{ $stock_request->user->username }}" class="badge text-bg-warning border-0 detailBtnSr" data-bs-toggle="modal" data-bs-target="#exampleModal">
                   <i class="bi bi-card-text"></i>

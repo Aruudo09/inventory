@@ -78,7 +78,7 @@
             <input id="x" type="hidden" name="description" value="{{ $purchase_requests->description }}">
             <trix-editor input="x"></trix-editor>
           </div>
-          <input type="hidden" name="counter" id="counter" value="0">
+          <input type="hidden" name="counter" id="counter" value="{{ $purchase_requests->item->count() }}">
         <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
       </form>
     </div>    

@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('berita_acara_item', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('berita_acara_id')->referance('id')->on('berita_acara')->onDelete('cascade');
+            $table->foreignId('berita_acara_id')->references('id')->on('berita_acaras')->onDelete('cascade');
             $table->foreignId('item_id');
             $table->double('qtyBa');
             $table->char('satuan', 5);

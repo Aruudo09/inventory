@@ -14,6 +14,6 @@ class BeritaAcaraSeeder extends Seeder
      */
     public function run()
     {
-        //
+        // 
     }
 }

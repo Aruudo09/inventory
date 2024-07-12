@@ -72,9 +72,11 @@ class SupplierController extends Controller
             $sp_id = Supplier::select('id')->where('spCode', $prefix)->get();
 
             for ($i=0; $i < $limit; $i++) { 
-                Supplier::find($sp_id[0]['id'])->item()->attach($request->item_id[$i]);
+                $attach[$request->item_id[$i]] = ['harga' => $request->harga[$i]];
             }
             
+            Supplier::find($sp_id[0]['id'])->item()->attach($attach);
+
             $request->session()->flash('success', 'Supplier baru berhasil ditambah!');
             return redirect('supplier/create');
         } else {
@@ -117,6 +119,7 @@ class SupplierController extends Controller
      */
     public function update(Request $request, Supplier $supplier)
     {
+        $sync = [];
         $rule = [
             'spName' => 'required',
             'spName' => 'required',
@@ -126,14 +129,15 @@ class SupplierController extends Controller
             'address' => 'required'
         ];
 
-        $limit = count($request->item_id);
-        $sync = [];
+        if ($request->item_id != null) {
+            $limit = count($request->item_id);
 
-        for ($i=0; $i < $limit; $i++) { 
-            $sync[] = $request->item_id[$i];
+            for ($i=0; $i < $limit; $i++) { 
+                $sync[$request->item_id[$i]] = ['harga' => $request->harga[$i]];
+            }
         }
+        
 
-        // DD($sync);
 
         $validated = $request->validate($rule);
 

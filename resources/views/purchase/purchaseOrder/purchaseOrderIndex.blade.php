@@ -16,7 +16,7 @@
   <!--FLASH MESSAGE-->
   @if(session()->has('danger'))
   <div class="alert alert-danger alert-dismissible fade show" role="alert">
-    {{ session('success') }}
+    {{ session('danger') }}
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
   @endif
@@ -37,6 +37,7 @@
           <th scope="col">No</th>
           <th scope="col">Number</th>
           <th scope="col">Name</th>
+          <th scope="col">Status</th>
           <th scope="col">Supplier</th>
           <th scope="col">Input Time</th>
           <th scope="col">Update Time</th>
@@ -49,12 +50,17 @@
               <td>{{ $loop->iteration }}</td>
               <td>{{ $purchase_order->poCode }}</td>
               <td>{{ $purchase_order->user->username }}</td>
+              @if ($purchase_order->status == 0)
+                  <td>Belum</td>
+              @else
+                  <td>Sudah</td>
+              @endif
               <td>{{ $purchase_order->supplier->spName }}</td>
               <td>{{ $purchase_order->created_at }}</td>
               <td>{{ $purchase_order->updated_at }}</td>
               <td>
                 {{-- PRINT BUTTON --}}
-                <a href="/purchaseOrder/word/{{ $purchase_order->id }}" class="badge text-bg-success border-0">
+                <a href="/purchaseOrder/printOut/{{ $purchase_order->id }}" class="badge text-bg-success border-0">
                   <i class="bi bi-file-earmark-arrow-down"></i>
                 </a>
                 <!---DETAIL BUTTON-->
@@ -64,7 +70,8 @@
                   class="badge text-bg-warning border-0 detailBtnPo" data-bs-toggle="modal" data-bs-target="#exampleModal">
                   <i class="bi bi-card-text"></i>
                 </button>
-                 <!--UPDATE BUTTON-->
+                @if ($purchase_order->status == 0)
+                    <!--UPDATE BUTTON-->
                  <a href="{{route('purchaseOrder.edit', $purchase_order->id )}}" class="badge text-bg-primary"><i class="bi bi-pencil-square"></i></a>
                  <!--END UPDATE BUTTON-->
                  <!--HAPUS BUTTON-->
@@ -74,6 +81,9 @@
                    <button class="badge text-bg-danger border-0" type="submit" onclick="return confirm('Anda Yakin?')"><i class="bi bi-x-square"></i></button>
                  </form>
                  <!--END HAPUS BUTTON-->
+                @else
+                    {{-- KOSONG --}}
+                @endif
               </td>
             </tr>
         @endforeach
@@ -131,7 +141,6 @@
           </div>
           <div class="modal-footer">
             <button type="button" id="closeBtn" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
           </div>
         </div>
       </div>

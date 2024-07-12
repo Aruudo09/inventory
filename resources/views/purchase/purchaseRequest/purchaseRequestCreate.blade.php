@@ -29,7 +29,13 @@
           <option value="" selected disabled>Pilih Divisi....</option>
           <option value="ST">Store</option>
           <option value="GS">General Service</option>
+          <option value="IT">IT</option>
+          <option value="PROC">Procurement</option>
         </select>
+      </div>
+      <div class="mb-3 col-lg-5">
+        <label for="created_at" class="form-label">Dates:</label>
+        <input type="datetime-local" class="form-control" name="created_at" id="">
       </div>
       <h6>Pilih Stock Request:</h6>
       <div class="mb-3 col-lg-5">

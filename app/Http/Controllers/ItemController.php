@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use App\Models\Category;
+use App\Exports\ItemExport;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
 use Haruncpi\LaravelIdGenerator\IdGenerator;
@@ -63,9 +65,6 @@ class ItemController extends Controller
             'partNumber' => 'required',
             'itemName' => 'required',
             'stock' => 'required',
-            'firstStock' => 'required',
-            'stockIn' => 'required',
-            'stockOut' => 'required',
             'satuan' => 'required',
             'harga' => 'required'
         ]);
@@ -118,9 +117,6 @@ class ItemController extends Controller
             'category_id' => 'required',
             'itemName' => 'required',
             'stock' => 'required',
-            'firstStock' => 'required',
-            'stockIn' => 'required',
-            'stockOut' => 'required',
             'satuan' => 'required',
             'harga' => 'required'
         ];
@@ -158,5 +154,12 @@ class ItemController extends Controller
         } else {
             return redirect('item')->with('danger', 'Barang gagal dihapus');
         }
+    }
+
+    public function export(Request $request) {
+        // DD($request);
+
+        // return Excel::download(new ItemExport, 'item.xlsx');
+        return (new ItemExport)->forMonth($request->month)->download('item.xlsx');
     }
 }

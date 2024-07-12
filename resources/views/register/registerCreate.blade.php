@@ -16,7 +16,7 @@
   <!--FLASH MESSAGE-->
   @if(session()->has('danger'))
   <div class="alert alert-danger alert-dismissible fade show" role="alert">
-    {{ session('success') }}
+    {{ session('danger') }}
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
   @endif
@@ -61,7 +61,7 @@
     </div>
     <div class="mb-3 col-lg-5">
       <label for="userlevel" class="form-label">Level User</label>
-      <select name="userLevel @error('userLevel') is-invalid @enderror" class="form-select" id="userLevel">
+      <select name="userLevel" class="form-select @error('userLevel') is-invalid @enderror" id="userLevel">
         <option value="" selected disabled>Pilih level user</option>
         <option value="1">Admin</option>
         <option value="0">User</option>

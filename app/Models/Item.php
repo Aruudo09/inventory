@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\PurchaseOrder;
 
 class Item extends Model
 {
@@ -22,6 +23,10 @@ class Item extends Model
         return $this->belongsTo(Category::class, 'category_id');
     }
 
+    public function stock_track() {
+        return $this->HasOne(StockTrack::class);
+    }
+
     public function supplier() {
         return $this->belongsToMany(Supplier::class, 'supplier_item', 'item_id', 'supplier_id')->withTimestamps();
     }
@@ -35,7 +40,7 @@ class Item extends Model
     }
 
     public function purchaseOrder() {
-        return $this->belongsToMany(Item::class, 'purchase_order_item', 'item_id', 'purchase_order_id')->withPivot('qtyPo', 'satuan', 'harga', 'total')->withTimestamps();
+        return $this->belongsToMany(PurchaseOrder::class, 'purchase_order_item', 'item_id', 'purchase_order_id')->withPivot('qtyPo', 'satuan', 'harga', 'total')->withTimestamps();
     }
 
     public function berita_acara() {

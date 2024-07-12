@@ -41,7 +41,7 @@
               </div>
           @enderror
       </div>
-      <h6>Pilih Barang:</h6>
+      {{-- <h6>Pilih Barang:</h6>
       <div class="mb-3 col-lg-5">
           <select class="js-example-basic-single" style="width: 75%" name="itemSelect" id="purchaseOrderSelect">
               <option value="" selected disabled>Pilih Barang....</option>
@@ -49,7 +49,7 @@
                   <option value="{{ $item->id }}">{{ $item->itemName }}</option>
               @endforeach
           </select>
-      </div>
+      </div> --}}
       <div class="mb-3 col-lg-5">
           <label for="kebutuhan" class="form-label">Kebutuhan:</label>
           <select name="kebutuhan" class="form-select" id="kebutuhan">
@@ -76,12 +76,7 @@
                     <td>{{ $loop->iteration }}</td>
                     <td><input type="hidden" name="item_id[]" value="{{ $purchase_orders->pivot->item_id }}">{{ $purchase_orders->itemName }}</td>
                     <td><input type="number" name="qtyPo[]" value="{{ $purchase_orders->pivot->qtyPo }}"></td>
-                    <td><select style="width: 75%" name="satuanSelect[]" id="satuanPoSelect">  
-                        <option value="{{ $purchase_orders->pivot->satuan }}" selected>{{ $purchase_orders->pivot->satuan }}</option> 
-                        <option value="Pcs">Pcs</option> 
-                        <option value="Kg">Kg</option> 
-                        <option value="Liter">Liter</option> 
-                        </select></td>
+                    <td><input type="text" name="satuan[]" value="{{ $purchase_orders->pivot->satuan }}"></td>
                     <td><input type="number" name="harga[]" value="{{ $purchase_orders->pivot->harga }}" required></td>
                     <td><button type="button" class="btn btn-danger deletePo" id="{{ $loop->iteration }}"><i class="bi bi-dash-square"></i></button></td>
                   </tr>
@@ -100,7 +95,7 @@
           <input id="z" type="hidden" value="{{ $purchase_order->pymntTerms }}" name="pymntTerms">
           <trix-editor input="z"></trix-editor>
       </div>
-      <input type="hidden" name="counter" id="counter" value="0">
+      <input type="hidden" name="counter" id="counter" value="{{ $purchase_order->item->count() }}">
       <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
       </form>
       </div>    

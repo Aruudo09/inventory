@@ -52,6 +52,10 @@
             @enderror
         </div>
         <div class="mb-3 col-lg-5">
+            <label for="created_at" class="form-label">Dates:</label>
+            <input type="datetime-local" class="form-control" name="created_at" id="">
+        </div>
+        <div class="mb-3 col-lg-5">
             <label for="kebutuhan" class="form-label">Kebutuhan:</label>
             <select name="kebutuhan" class="form-select" id="kebutuhan">
                 <option value="" selected disabled>Pilih Kebutuhan</option>

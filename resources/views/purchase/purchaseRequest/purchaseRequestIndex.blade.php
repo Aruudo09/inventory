@@ -56,13 +56,18 @@
               <td>{{ $purchase_request->created_at }}</td>
               <td>{{ $purchase_request->updated_at }}</td>
               <td>
+                {{-- PRINT BUTTON --}}
+                <a href="/purchaseRequest/printOut/{{ $purchase_request->id }}" class="badge text-bg-success border-0">
+                  <i class="bi bi-file-earmark-arrow-down"></i>
+                </a>
                 <!---DETAIL BUTTON-->
                 <button type="button" data-url="{{ route('setDetail.purchaseRequest', $purchase_request->id) }}" data-code="{{ $purchase_request->prCode }}" 
                   data-name="{{ $purchase_request->user->username }}" data-description="{{ $purchase_request->description }}"
                   data-sr="{{ $purchase_request->stock_request->srCode }}" class="badge text-bg-warning border-0 detailBtnPr" data-bs-toggle="modal" data-bs-target="#exampleModal">
                   <i class="bi bi-card-text"></i>
                 </button>
-                 <!--UPDATE BUTTON-->
+                @if ($purchase_request->status == 0)
+                    <!--UPDATE BUTTON-->
                  <a href="{{route('purchaseRequest.edit', $purchase_request->id )}}" class="badge text-bg-primary"><i class="bi bi-pencil-square"></i></a>
                  <!--END UPDATE BUTTON-->
                  <!--HAPUS BUTTON-->
@@ -72,6 +77,9 @@
                    <button class="badge text-bg-danger border-0" type="submit" onclick="return confirm('Anda Yakin?')"><i class="bi bi-x-square"></i></button>
                  </form>
                  <!--END HAPUS BUTTON-->
+                @else
+                    {{-- KOSONG --}}
+                @endif
               </td>
             </tr>
         @endforeach
